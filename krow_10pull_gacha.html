@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クロウ - 本格10連ガチャ</title>
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:radial-gradient(circle,#2b1149,#090312 70%);
+    color:white;
+    font-family:sans-serif;
+}
+#title{
+    text-align:center;
+    margin-top:20px;
+    font-size:42px;
+    text-shadow:0 0 20px #b066ff;
+}
+#sub{
+    text-align:center;
+    color:#d4b3ff;
+}
+#pullBtn{
+    display:block;
+    margin:30px auto;
+    padding:18px 35px;
+    font-size:28px;
+    border:none;
+    border-radius:18px;
+    background:#8d4dff;
+    color:white;
+    box-shadow:0 0 25px #b066ff;
+}
+#resultArea{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    padding:20px;
+}
+.card{
+    border-radius:18px;
+    padding:18px;
+    min-height:90px;
+    text-align:center;
+    font-size:22px;
+    animation:pop 0.5s ease;
+}
+.R{
+    background:#334;
+}
+.SR{
+    background:#6136a8;
+    box-shadow:0 0 18px #9d69ff;
+}
+.SSR{
+    background:linear-gradient(45deg,#8a2be2,#ff66ff);
+    box-shadow:0 0 30px #ff99ff;
+}
+.UR{
+    background:linear-gradient(45deg,#ffe066,#ff66ff,#66ccff);
+    color:black;
+    box-shadow:0 0 45px white;
+}
+#banner{
+    text-align:center;
+    font-size:34px;
+    margin-top:15px;
+    min-height:50px;
+    text-shadow:0 0 25px white;
+}
+.flash{
+    animation:flash 0.6s linear 2;
+}
+@keyframes flash{
+    0%{background:white;}
+    100%{background:black;}
+}
+@keyframes pop{
+    from{
+        transform:scale(0.3);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="title">クロウ - 幻影魔導召喚</div>
+<div id="sub">🌌 UR確定10連 🌌</div>
+
+<button id="pullBtn">10連ガチャを引く</button>
+
+<div id="banner"></div>
+
+<div id="resultArea"></div>
+
+<script>
+
+const items = [
+    {name:"シャドウボルト", rare:"R"},
+    {name:"ダークチェイン", rare:"R"},
+    {name:"魔導加速", rare:"SR"},
+    {name:"虚空転移", rare:"SR"},
+    {name:"虚無斬", rare:"SSR"},
+    {name:"終焉ノ刻", rare:"SSR"},
+    {name:"時空崩壊", rare:"UR"},
+    {name:"神滅ノ魔眼", rare:"UR"}
+];
+
+const resultArea = document.getElementById("resultArea");
+const banner = document.getElementById("banner");
+
+function rollOne(forceUR=false){
+
+    if(forceUR){
+        return items.filter(i=>i.rare==="UR")[Math.floor(Math.random()*2)];
+    }
+
+    const r = Math.random();
+
+    if(r < 0.55){
+        return items[Math.floor(Math.random()*2)];
+    }else if(r < 0.85){
+        return items[2 + Math.floor(Math.random()*2)];
+    }else if(r < 0.97){
+        return items[4 + Math.floor(Math.random()*2)];
+    }else{
+        return items[6 + Math.floor(Math.random()*2)];
+    }
+}
+
+document.getElementById("pullBtn").onclick = ()=>{
+
+    resultArea.innerHTML = "";
+    banner.innerHTML = "召喚中...";
+    document.body.classList.remove("flash");
+
+    setTimeout(()=>{
+
+        let gotUR = false;
+
+        for(let i=0;i<10;i++){
+
+            let item;
+
+            if(i===9 && !gotUR){
+                item = rollOne(true);
+                gotUR = true;
+            }else{
+                item = rollOne();
+                if(item.rare==="UR") gotUR=true;
+            }
+
+            const card = document.createElement("div");
+            card.className = "card " + item.rare;
+            card.innerHTML = `
+                <div>${item.rare}</div>
+                <div>${item.name}</div>
+            `;
+
+            resultArea.appendChild(card);
+
+            if(item.rare==="SSR" || item.rare==="UR"){
+                document.body.classList.add("flash");
+            }
+        }
+
+        if(gotUR){
+            banner.innerHTML = "🌌 UR確定召喚成功！！ 🌌";
+        }else{
+            banner.innerHTML = "SSR獲得！";
+        }
+
+    },1200);
+}
+
+</script>
+
+</body>
+</html>
